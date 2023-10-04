@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VanessaGram - Find Users</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: rgb(204, 205, 248);
+            color: black;
+        }
+        .banner {
+            text-align: center;
+            color: rgb(255, 255, 255);
+            background-color: rgb(1, 5, 54);
+            width: 100%;
+            height: auto;
+        }
+        .logo {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+        }
+        .menu_bar {
+            float: left;
+            width: 100%;
+            background-color:#000000;
+        }
+        .menu_button {
+            color:#ffffff;
+            background-color:#000000;
+            text-align:center;
+            font-size: 20px;
+            border:none;
+            padding:10px 20px;
+            cursor:pointer;
+            float: left;
+        }
+        .menu_button:hover{
+            color:#000000;
+            background-color:#d0d0d0;
+        }
+        #enterDetails {
+            float: left;
+            width: 50%;
+            height: 400px;
+            background-color: rgb(219, 171, 171);
+            color: floralwhite;
+        }
+        #findDetails {
+            float: left;
+            width: 50%;
+            height: 400px;
+            background-color: rgb(153, 185, 245);
+            color: darkslategray;
+        }
+        #listOfUsers {
+            color: darkslategray;
+            padding-bottom: 200px;
+        }
+        .userProfile{
+            margin-left: 30px;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: rgb(230, 230, 252);
+            border-top: 5px solid;
+            border-image-slice: 1;
+            border-image-source: linear-gradient(to left, #CCCDF8, #010536);
+            overflow: hidden;
+        }
+        .userProfilePic{
+            width: 30%;
+            margin: 1%;
+            float: left;
+            padding: 10px;
+            background-color: rgb(230, 230, 252);
+            border-radius: 15%;
+            border: 5px dotted;
+        }
+        .userProfileInfo{
+            width: 60%;
+            margin: 1%;
+            float: right;
+            padding: 10px;
+            background-color: rgb(230, 230, 252);
+        }
+        .formatTwoCols{
+            clear: both;
+            display: block;
+        }
+        .nameText{
+            font-size: 30px;
+        }
+        .aboutText{
+            font-size: 17px;            
+        }
+        .statusText{
+            font-size: 13px;
+            color: #73707c;
+        }
+    </style>
+</head>
+<body>
+    <div class="banner">
+        <img class="logo" style='object-fit: contain' src="VanessaGram Banner Big.png" alt="VanessaGramLogo" onclick="window.location.href='index.html'">
+    </div>
+
+    <div class="menu_bar">
+        <button class="menu_button" onclick="window.location.href='index.html';">Home</button>
+        <button class="menu_button" onclick="window.location.href='findUsers.html';">User List</button>
+    </div>
+    
+    <div id="listOfUsers" style="padding-top: 50px;">
+        <h1 style="font-size: 40px;">Users</h1>
+    </div>
+
+    <script type="module">
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Import app initialization method
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+
+        // Import analytics
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB5jc3zG5PjPIwvnCXzCSN7_yVuxFUXA6M",
+            authDomain: "profile-327a5.firebaseapp.com",
+            databaseURL: "https://profile-327a5-default-rtdb.firebaseio.com",
+            projectId: "profile-327a5",
+            storageBucket: "profile-327a5.appspot.com",
+            messagingSenderId: "840048575772",
+            appId: "1:840048575772:web:5f35880f9d7fa33d0d26d9",
+            measurementId: "G-HGP4YZRJ6M"
+        };
+        // Initializes to the set up firebase app
+        const app = initializeApp(firebaseConfig);
+
+        // Import database methods
+        import {
+            getDatabase,
+            ref,
+            onValue,
+            get,
+            set,
+            child,
+            update,
+            remove}
+        from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+        
+        // Stores RTDB from Firebase
+        const db = getDatabase();
+
+        var listOfUsers = document.querySelector("#listOfUsers");
+
+        function ListUsers() {
+            // Reference to database
+            const dbref = ref(db);
+            // Gets the children of Users/
+            get(child(dbref, "Users/"))
+            .then((snapshot)=>{
+                if(snapshot.exists()){
+                    // Loops through each key in Users/
+                    for(var user in snapshot.val()) {
+                        // For each User, creates a div containing 2 floating divs
+                        var userDiv = document.createElement('div');
+                        userDiv.className += 'userProfile';
+
+                        // Creates left div element for profile picture and status
+                        var userPpDiv = document.createElement('div');
+                        userPpDiv.className += 'userProfilePic';
+                        // Appends the left div to the parent div
+                        userDiv.appendChild(userPpDiv);
+
+                        // Adds a round profile image
+                        var userPpImg = document.createElement('img');
+                        userPpImg.src = snapshot.val()[user]['image'];
+                        userPpImg.style["width"] = "90%";
+                        userPpImg.style["max-width"] = "400px";
+                        userPpImg.style["height"] = "90%";
+                        userPpImg.style["max-width"] = "400px";
+                        userPpImg.style["border-radius"] = "50%";
+                        userPpDiv.appendChild(userPpImg);
+                        
+                        // Adds status below the image
+                        var userStatus = document.createElement('p');
+                        userStatus.className += 'statusText';
+                        userStatus.innerHTML += snapshot.val()[user]["status"];
+                        userPpDiv.appendChild(userStatus);
+
+                        // Creates right div element for name and about
+                        var userInfoDiv = document.createElement('div');
+                        userInfoDiv.className += 'userProfileInfo';
+                        // Appends the right div to the parent div
+                        userDiv.appendChild(userInfoDiv);
+
+                        // Appends name to top of right div
+                        var userName = document.createElement('p');
+                        userName.className += 'nameText';
+                        userName.innerHTML += snapshot.val()[user]["name"];
+                        userInfoDiv.appendChild(userName);
+
+                        // Appends about to below the name
+                        var userAbout = document.createElement('p');
+                        userAbout.className += 'aboutText';
+                        userAbout.innerHTML += snapshot.val()[user]["about"];
+                        userInfoDiv.appendChild(userAbout);
+
+                        // for(var userInfo in snapshot.val()[user]){
+                        //     userDiv.innerHTML += userInfo + " = " + snapshot.val()[user][userInfo] + '<br>';
+                        // }
+
+                        // Adds the parent div to the html
+                        listOfUsers.appendChild(userDiv);
+
+                        // Additional div used to fix some formatting
+                        var userFmtDiv = document.createElement('div');
+                        userFmtDiv.className += 'formatTwoCols';
+                        userDiv.appendChild(userFmtDiv);
+                    }
+
+                } else {
+                    alert("No data found");         // Alerts if no data is found
+                }
+            })
+            .catch((error)=>{
+                alert(error)                        // Alerts if error
+            })
+        }
+
+        // Calls function to list all users from RTDB
+        ListUsers();
+
+      </script>
+</body>
+</html>
